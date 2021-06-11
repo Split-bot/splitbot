@@ -5,8 +5,13 @@ name = "pypi"
 
 [packages]
 "discord.py" = "*"
+pymongo = "*"
+dnspython = "*"
 
 [dev-packages]
+black = "==19.10b0"
+flake8 = "*"
+isort = "*"
 
 [requires]
 python_version = "3.8"
