@@ -3,6 +3,7 @@ import os
 
 import discord
 from discord.ext import commands
+from pymongo import MongoClient
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -14,6 +15,8 @@ class SplitBot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(command_prefix="!", intents=intents)
+        
+        self.client = MongoClient(os.getenv("CONNECTION_URI"))
         self.add_commands()
 
     async def on_ready(self):
@@ -25,7 +28,7 @@ class SplitBot(commands.Bot):
 
         print("Message from {0.author}: {0.content}".format(message))
         await message.channel.send(message.content)
-
+        self.client.splitbot.test.replace_one({'_id': str(message.author)}, {'_id': str(message.author), 'msg': message.content})
         await self.process_commands(message)
 
     def add_commands(self):
