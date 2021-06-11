@@ -1,1 +1,1 @@
-web: pipenv run bot
+worker: pipenv run bot
