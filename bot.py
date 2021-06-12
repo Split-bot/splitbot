@@ -9,9 +9,10 @@ import discord
 from discord.ext import commands
 from pkg_resources import parse_version
 
-logging.basicConfig()
+from core.db import MongoDBClient
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class SplitBot(commands.Bot):
@@ -21,6 +22,7 @@ class SplitBot(commands.Bot):
         self.prefix = "!"
         super().__init__(command_prefix=self.prefix, intents=intents)
 
+        self._db_client = None
         self.loaded_cogs = ["cogs.splitcog", "cogs.utility"]
         self.start_time = datetime.utcnow()
 
@@ -43,6 +45,12 @@ class SplitBot(commands.Bot):
             fmt = "{d}d " + fmt
 
         return Formatter().format(fmt, d=days, h=hours, m=minutes, s=seconds)
+
+    @property
+    def db_client(self):
+        if self._db_client is None:
+            self._db_client = MongoDBClient(self)
+        return self._db_client
 
     async def on_ready(self):
         logger.info("Logged on as {0}!".format(self.user))
