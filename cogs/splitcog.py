@@ -1,13 +1,17 @@
+from __future__ import annotations
 import logging
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Context
+
+from bot import SplitBot
 
 logger = logging.getLogger(__name__)
 
 
 class SplitCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: SplitBot):
         self.bot = bot
 
     @commands.command()
@@ -15,20 +19,23 @@ class SplitCog(commands.Cog):
         await ctx.send("{} w0t".format(ctx.author.mention))
 
     @commands.command()
-    async def balance(self, ctx):
+    async def balance(self, ctx: Context):
         balances = await self.bot.db_client.get_balance(ctx.guild.id)
         descriptions = []
         for balance in balances:
-            user_id = balance["user_id"]
-            value = balance["value"]
-            descriptions.append("<@{}>: {}".format(user_id, value))
+            descriptions.append("<@{}>: {}".format(balance.user_id, balance.value))
         if len(descriptions) == 0:
             description = "No outstanding debts."
         else:
             description = "\n".join(descriptions)
-        embed = discord.Embed(title="Balances", description=description)
+        embed = discord.Embed(title="Balances jago", description=description)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def kaya(self, ctx: Context):
+        await self.bot.db_client.add_balance(ctx.guild.id, ctx.author.id, 1000)
+        await ctx.send(f"{ctx.author.mention} kaya sekarang")
 
-def setup(bot):
+
+def setup(bot: SplitBot):
     bot.add_cog(SplitCog(bot))
