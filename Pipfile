@@ -5,9 +5,8 @@ name = "pypi"
 
 [packages]
 "discord.py" = "*"
-pymongo = "*"
-dnspython = "*"
 motor = "*"
+dnspython = "*"
 
 [dev-packages]
 black = "==19.10b0"
