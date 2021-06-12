@@ -16,7 +16,6 @@ class MongoDBClient:
     def __init__(self, bot):
         try:
             self.client = AsyncIOMotorClient(os.getenv("CONNECTION_URI"))
-            self.db = self.client.splitbot
         except ConfigurationError as e:
             logger.critical(
                 "Your MongoDB CONNECTION_URI might be copied wrong, "
