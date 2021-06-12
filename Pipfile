@@ -7,14 +7,18 @@ name = "pypi"
 "discord.py" = "*"
 motor = "*"
 dnspython = "*"
+odmantic = "*"
 
 [dev-packages]
-black = "==19.10b0"
 flake8 = "*"
 isort = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
 bot = "python bot.py"
+
+[pipenv]
+allow_prereleases = true
