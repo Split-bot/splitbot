@@ -1,7 +1,6 @@
 from typing import List
-from odmantic import Field, Model
 
-from types import SimpleNamespace
+from odmantic import Field, Model
 
 
 class Balance(Model):

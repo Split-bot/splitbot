@@ -4,8 +4,8 @@ import sys
 from typing import Union
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.errors import ConfigurationError
 from odmantic import AIOEngine
+from pymongo.errors import ConfigurationError
 
 from core.model import Balance
 
@@ -37,7 +37,7 @@ class MongoDBClient:
             Balance,
             (Balance.guild_id == str(guild_id)) & (Balance.user_id == str(user_id)),
         )
-        if balance == None:
+        if balance is None:
             balance = Balance(guild_id=guild_id, user_id=user_id)
         balance.value += added_value
         await self.engine.save(balance)
