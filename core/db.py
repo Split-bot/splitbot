@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from odmantic import AIOEngine
 from pymongo.errors import ConfigurationError
 
-from core.model import Balance
+from core.model import Balance, Expense, UserValue
 
 logger = logging.getLogger(__name__)
 
@@ -33,18 +33,29 @@ class MongoDBClient:
             Balance, Balance.guild_id == str(guild_id)
         )
 
-    async def add_balance(
+    async def _add_balance(
         self,
         guild_id: Union[int, str],
         user_id: Union[int, str],
         added_value: float,
     ) -> None:
+        # TODO(lungsin): fix crappy race condition
         balance = await self.engine.find_one(
             Balance,
             (Balance.guild_id == str(guild_id))
             & (Balance.user_id == str(user_id)),
         )
         if balance is None:
-            balance = Balance(guild_id=guild_id, user_id=user_id)
+            balance = Balance(
+                guild_id=guild_id, user_value=UserValue(user_id=user_id)
+            )
         balance.value += added_value
         await self.engine.save(balance)
+
+    async def add_expense_and_update_balance(self, expense: Expense):
+        # TODO(lungsin): fix crappy race condition
+        await self.engine.save(expense)
+        for user_value in expense.balances:
+            self._add_balance(
+                expense.guild_id, user_value.user_id, user_value.value
+            )

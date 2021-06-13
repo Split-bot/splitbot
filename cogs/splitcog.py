@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 from bot import SplitBot
+from core.model import Expense
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,28 @@ class SplitCog(commands.Cog):
 
     @commands.command()
     async def kaya(self, ctx: Context):
-        await self.bot.db_client.add_balance(ctx.guild.id, ctx.author.id, 1000)
+        await self.bot.db_client._add_balance(
+            ctx.guild.id, ctx.author.id, 1000
+        )
         await ctx.send(f"{ctx.author.mention} kaya sekarang")
+
+    @commands.command()
+    async def expense(
+        self,
+        ctx: Context,
+        payer: discord.Member,
+        total_price: float,
+        *,
+        args=None,
+    ):
+        expense, status = Expense.from_items(
+            str(ctx.guild.id), str(payer.id), total_price, []
+        )
+        await ctx.send("{}, scale: {}".format(expense, status["scale"]))
+
+    @expense.error
+    async def expense_handler(self, ctx: Context, error):
+        await ctx.send("Anjing {}".format(error))
 
 
 def setup(bot: SplitBot):
