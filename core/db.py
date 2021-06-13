@@ -28,14 +28,20 @@ class MongoDBClient:
         self.engine = AIOEngine(motor_client=self.client, database="splitbot")
 
     async def get_balance(self, guild_id: Union[int, str]) -> list:
-        return await self.engine.find(Balance, Balance.guild_id == str(guild_id))
+        return await self.engine.find(
+            Balance, Balance.guild_id == str(guild_id)
+        )
 
     async def add_balance(
-        self, guild_id: Union[int, str], user_id: Union[int, str], added_value: float
+        self,
+        guild_id: Union[int, str],
+        user_id: Union[int, str],
+        added_value: float,
     ) -> None:
         balance = await self.engine.find_one(
             Balance,
-            (Balance.guild_id == str(guild_id)) & (Balance.user_id == str(user_id)),
+            (Balance.guild_id == str(guild_id))
+            & (Balance.user_id == str(user_id)),
         )
         if balance is None:
             balance = Balance(guild_id=guild_id, user_id=user_id)

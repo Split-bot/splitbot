@@ -24,12 +24,14 @@ class SplitCog(commands.Cog):
         balances = await self.bot.db_client.get_balance(ctx.guild.id)
         descriptions = []
         for balance in balances:
-            descriptions.append("<@{}>: {}".format(balance.user_id, balance.value))
+            descriptions.append(
+                "<@{}>: {}".format(balance.user_id, balance.value)
+            )
         if len(descriptions) == 0:
             description = "No outstanding debts."
         else:
             description = "\n".join(descriptions)
-        embed = discord.Embed(title="Balances jago", description=description)
+        embed = discord.Embed(title="Balances", description=description)
         await ctx.send(embed=embed)
 
     @commands.command()
