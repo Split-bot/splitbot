@@ -38,7 +38,8 @@ class SplitCog(commands.Cog):
         embed = discord.Embed(title="Balances", description=description)
         await ctx.send(embed=embed)
 
-    def _parse_item(self, line):
+    @staticmethod
+    def _parse_item(line):
         words = line.split()
         item = Item()
         regex = re.compile(r"^<@(!)?(\d+)>$")
