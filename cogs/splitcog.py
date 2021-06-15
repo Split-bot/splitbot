@@ -9,7 +9,7 @@ from discord.ext.commands import Context
 
 from bot import SplitBot
 from core.model import Expense, Item
-from core.utils.math_eval import eval_expr
+from utils.math_eval import eval_expr
 
 logger = logging.getLogger(__name__)
 

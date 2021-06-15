@@ -30,7 +30,7 @@ jobs:
     - name: Bandit syntax check
       run: bandit -r . -b .bandit_baseline.json
     - name: Pylint
-      run: pylint ./bot.py cogs/*.py core/*.py --exit-zero -r y --disable=C0114,C0115,C0116
+      run: pylint ./bot.py cogs/*.py core/*.py utils/*.py --exit-zero -r y --disable=C0114,C0115,C0116
     - name: Black
       run: |
         black . --diff --check --line-length=79
