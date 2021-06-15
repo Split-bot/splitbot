@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import math
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Tuple
 
 from odmantic import Field, Model
@@ -20,8 +21,8 @@ class Balance(Model):
 
 @dataclass
 class Item:
-    price: float
-    user_ids: List[int]
+    price: float = 0.0
+    user_ids: List[str] = field(default_factory=list)
 
 
 class Expense(Model):
@@ -48,7 +49,10 @@ class Expense(Model):
 
         user_expense[payer_id] += subtotal_price
 
-        scale = total_price / subtotal_price if subtotal_price != 0 else 0
+        if math.isclose(subtotal_price, 0):
+            raise ValueError("Zero subtotal")
+
+        scale = total_price / subtotal_price
 
         user_values = [
             UserValue(user_id=user_id, value=value * scale)

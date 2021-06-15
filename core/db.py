@@ -43,19 +43,19 @@ class MongoDBClient:
         balance = await self.engine.find_one(
             Balance,
             (Balance.guild_id == str(guild_id))
-            & (Balance.user_id == str(user_id)),
+            & (Balance.user_value.user_id == str(user_id)),
         )
         if balance is None:
             balance = Balance(
                 guild_id=guild_id, user_value=UserValue(user_id=user_id)
             )
-        balance.value += added_value
+        balance.user_value.value += added_value
         await self.engine.save(balance)
 
     async def add_expense_and_update_balance(self, expense: Expense):
         # TODO(lungsin): fix crappy race condition
         await self.engine.save(expense)
-        for user_value in expense.balances:
-            self._add_balance(
+        for user_value in expense.user_values:
+            await self._add_balance(
                 expense.guild_id, user_value.user_id, user_value.value
             )
