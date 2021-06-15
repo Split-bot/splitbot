@@ -9,6 +9,7 @@ from discord.ext.commands import Context
 
 from bot import SplitBot
 from core.model import Expense, Item
+from core.utils.math_eval import eval_expr
 
 logger = logging.getLogger(__name__)
 
@@ -43,18 +44,24 @@ class SplitCog(commands.Cog):
         words = line.split()
         item = Item()
         regex = re.compile(r"^<@(!)?(\d+)>$")
+        has_price = False
         for word in words:
-            try:
-                price = float(word)
+            match = regex.match(word)
+            if match:
+                user_id = match.group(2)
+                item.user_ids.append(user_id)
+                continue
+
+            price = eval_expr(word)
+            if price is not None:
                 item.price = price
-            except ValueError:
-                match = regex.match(word)
-                if match:
-                    user_id = match.group(2)
-                    item.user_ids.append(user_id)
-                else:
-                    # ignore for now
-                    pass
+                has_price = True
+                continue
+
+            # otherwise ignore for now, assume item name
+
+        if not has_price:
+            raise ValueError("No price detected")
         return item
 
     @commands.command()
