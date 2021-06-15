@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class SplitBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
-        intents.members = True
+        intents.members = True  # pylint: disable=assigning-non-slot
         self.prefix = "!"
         super().__init__(command_prefix=self.prefix, intents=intents)
 
@@ -53,7 +53,7 @@ class SplitBot(commands.Bot):
         return self._db_client
 
     async def on_ready(self):
-        logger.info("Logged on as {0}!".format(self.user))
+        logger.info("Logged on as %s!", self.user)
 
     async def on_message(self, message):
         if message.author.bot:
@@ -63,7 +63,7 @@ class SplitBot(commands.Bot):
             await self.process_commands(message)
             return
 
-        logger.info("Message from {0.author}: {0.content}".format(message))
+        logger.info("Message from %s: %s", message.author, message.content)
         await message.channel.send(message.content)
 
     def startup(self):

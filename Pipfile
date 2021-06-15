@@ -11,8 +11,9 @@ odmantic = "*"
 
 [dev-packages]
 flake8 = "*"
-isort = "*"
 black = "*"
+pylint = "*"
+bandit = "*"
 
 [requires]
 python_version = "3.8"
