@@ -23,7 +23,8 @@ class Expense(Model):
     def from_items(cls, guild_id: int, items: List[Item]):
         user_expense = {}
         for item in items:
-            assert len(item.user_ids) >= 0
+            if not item.user_ids:
+                raise ValueError("An item has an empty user list")
             price_per_user = item.price / len(item.user_ids)
             for user_id in item.user_ids:
                 if user_id not in user_expense:
