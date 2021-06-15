@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 
 from odmantic import Field, Model
@@ -9,10 +10,10 @@ class Balance(Model):
     value: float = Field(default=0.0)
 
 
+@dataclass
 class Item:
-    def __init__(self, price: float, user_ids: List[int]):
-        self.price = price
-        self.user_ids = user_ids
+    price: float
+    user_ids: List[int]
 
 
 class Expense(Model):
@@ -32,7 +33,7 @@ class Expense(Model):
                 user_expense[user_id] += price_per_user
 
         balances = [
-            Balance(guild_id, user_id, balance)
+            Balance(guild_id=guild_id, user_id=user_id, balance=balance)
             for user_id, balance in user_expense.items()
         ]
         return cls(guild_id=guild_id, balances=balances)

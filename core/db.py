@@ -14,15 +14,16 @@ logger = logging.getLogger(__name__)
 
 class MongoDBClient:
     def __init__(self, bot):
+        self.bot = bot
         try:
             self.client = AsyncIOMotorClient(os.getenv("CONNECTION_URI"))
-        except ConfigurationError as e:
+        except ConfigurationError as error:
             logger.critical(
                 "Your MongoDB CONNECTION_URI might be copied wrong, "
                 "try re-copying from the source again. "
                 "Otherwise noted in the following message:"
             )
-            logger.critical(e)
+            logger.critical(error)
             sys.exit(0)
 
         self.engine = AIOEngine(motor_client=self.client, database="splitbot")
