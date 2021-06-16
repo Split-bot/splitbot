@@ -11,6 +11,8 @@ from pkg_resources import parse_version
 
 from core.db import MongoDBClient
 
+import configparser
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -19,8 +21,13 @@ class SplitBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.members = True  # pylint: disable=assigning-non-slot
-        self.prefix = "!"
-        super().__init__(command_prefix=self.prefix, intents=intents)
+
+        self.config = configparser.ConfigParser()
+        self.config.read("config.ini")
+
+        super().__init__(
+            command_prefix=self.config["values"]["prefix"], intents=intents
+        )
 
         self._db_client = None
         self.loaded_cogs = ["cogs.splitcog", "cogs.utility"]
@@ -59,7 +66,7 @@ class SplitBot(commands.Bot):
         if message.author.bot:
             return
 
-        if message.content.startswith(self.prefix):
+        if message.content.startswith(self.config["values"]["prefix"]):
             await self.process_commands(message)
             return
 
