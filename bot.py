@@ -1,5 +1,6 @@
 __version__ = "0.1.0"
 
+import configparser
 import logging
 import os
 from datetime import datetime
@@ -10,8 +11,6 @@ from discord.ext import commands
 from pkg_resources import parse_version
 
 from core.db import MongoDBClient
-
-import configparser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ import re
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context, CommandInvokeError
+from discord.ext.commands import CommandInvokeError, Context
 
 from bot import SplitBot
 from core.model import Expense, Item
@@ -61,8 +61,8 @@ class SplitCog(commands.Cog):
                     item.price = price
                     price_occurence += 1
                     continue
-                else:
-                    raise ValueError("Invalid price")
+
+                raise ValueError("Invalid price")
 
             # otherwise ignore for now, assume item name
 
