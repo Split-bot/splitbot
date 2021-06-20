@@ -5,7 +5,7 @@ import re
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import Context
+from discord.ext.commands import CommandInvokeError, Context
 
 from bot import SplitBot
 from core.model import Expense, Item
@@ -39,12 +39,11 @@ class SplitCog(commands.Cog):
         embed = discord.Embed(title="Balances", description=description)
         await ctx.send(embed=embed)
 
-    @staticmethod
-    def _parse_item(line):
+    def _parse_item(self, line):
         words = line.split()
         item = Item()
         regex = re.compile(r"^<@(!)?(\d+)>$")
-        has_price = False
+        price_occurence = 0
         for word in words:
             match = regex.match(word)
             if match:
@@ -54,14 +53,23 @@ class SplitCog(commands.Cog):
 
             price = eval_expr(word)
             if price is not None:
-                item.price = price
-                has_price = True
-                continue
+                if (
+                    float(self.bot.config["values"]["price_min"])
+                    < price
+                    <= float(self.bot.config["values"]["price_max"])
+                ):  # also filters nan, inf
+                    item.price = price
+                    price_occurence += 1
+                    continue
+
+                raise ValueError("Invalid price")
 
             # otherwise ignore for now, assume item name
 
-        if not has_price:
+        if price_occurence == 0:
             raise ValueError("No price detected")
+        if price_occurence > 1:
+            raise ValueError("Multiple prices detected")
         return item
 
     @commands.command()
@@ -89,7 +97,11 @@ class SplitCog(commands.Cog):
             title="Expense", description="\n".join(descriptions)
         )
         await ctx.send(embed=embed)
-        if not 0 <= tax <= 20:
+        if (
+            not float(self.bot.config["values"]["tax_min"])
+            <= tax
+            <= float(self.bot.config["values"]["tax_max"])
+        ):
             await ctx.send(
                 embed=discord.Embed(
                     title="Warning",
@@ -102,7 +114,11 @@ class SplitCog(commands.Cog):
 
     @expense.error
     async def expense_handler(self, ctx: Context, error):
-        await ctx.send("Anjing! {}".format(error))
+        if isinstance(error, CommandInvokeError):
+            message = str(error.original)
+        else:
+            message = str(error)
+        await ctx.send("Anjing! {}".format(message))
 
 
 def setup(bot: SplitBot):
